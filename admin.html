@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciamento do Bot Telegram</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #messages { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll; margin-bottom: 20px; }
+        form { display: flex; gap: 10px; }
+        input, textarea, button { padding: 5px; }
+        button { background: #0088cc; color: white; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Gerenciamento do Bot Telegram</h1>
+    <div id="messages">Carregando mensagens...</div>
+    <form id="replyForm">
+        <input type="number" id="chatId" placeholder="Chat ID do usuário" required>
+        <textarea id="messageText" placeholder="Mensagem de resposta" required rows="3" cols="50"></textarea>
+        <button type="submit">Enviar Mensagem</button>
+    </form>
+
+    <script>
+        const TOKEN = '8284313149:AAEQ9uiq8do8t6mxtINtyeT-tynURpP789s';
+        const MESSAGES_DIV = document.getElementById('messages');
+        const FORM = document.getElementById('replyForm');
+        let offset = 0;
+
+        // Polling de getUpdates a cada 10 segundos
+        async function fetchUpdates() {
+            try {
+                const response = await fetch(`https://api.telegram.org/bot${TOKEN}/getUpdates?offset=${offset}&limit=10`);
+                const data = await response.json();
+                if (data.ok && data.result.length > 0) {
+                    data.result.forEach(update => {
+                        offset = update.update_id + 1;
+                        const msg = update.message;
+                        if (msg) {
+                            MESSAGES_DIV.innerHTML += `<p><strong>De:</strong> ${msg.from.username || msg.from.first_name} (ID: ${msg.chat.id})<br><strong>Mensagem:</strong> ${msg.text || '[Mídia]'}<br><em>${new Date(msg.date * 1000).toLocaleString()}</em></p><hr>`;
+                        }
+                    });
+                    MESSAGES_DIV.scrollTop = MESSAGES_DIV.scrollHeight;
+                }
+            } catch (error) {
+                console.error('Erro ao buscar atualizações:', error);
+            }
+            setTimeout(fetchUpdates, 10000); // Polling novamente
+        }
+
+        // Enviar resposta
+        FORM.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const chatId = document.getElementById('chatId').value;
+            const text = document.getElementById('messageText').value;
+            try {
+                const response = await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: chatId, text: text })
+                });
+                if (response.ok) {
+                    alert('Mensagem enviada com sucesso!');
+                    FORM.reset();
+                } else {
+                    alert('Erro ao enviar mensagem.');
+                }
+            } catch (error) {
+                alert('Erro de rede.');
+            }
+        });
+
+        fetchUpdates(); // Iniciar polling
+    </script>
+</body>
+</html>

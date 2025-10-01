@@ -1,0 +1,29 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/*.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/admin.html",
+      "dest": "/admin.html"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/daily",
+      "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/reminder",
+      "schedule": "*/5 * * * *"
+    }
+  ]
+}
