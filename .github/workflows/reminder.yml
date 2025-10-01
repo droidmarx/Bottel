@@ -1,12 +1,12 @@
-name: Verificar Lembretes
+name: Lembrete Horário
 
 on:
   schedule:
-    - cron: '0 * * * *'  # A cada hora (ajuste para '*/5 * * * *' se necessário, mas hora é suficiente para lembretes)
-  workflow_dispatch:  # Permite execução manual
+    - cron: '0 * * * *'  # A cada hora
+  workflow_dispatch:
 
 jobs:
-  check-reminders:
+  send-reminder:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,6 +21,4 @@ jobs:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
           MOCK_API_URL: ${{ secrets.MOCK_API_URL }}
-        run: |
-          curl -X POST https://seu-projeto.vercel.app/api/reminder
-          # Ou execute localmente: node api/reminder.js (ajuste se necessário)
+        run: node api/reminder.js
