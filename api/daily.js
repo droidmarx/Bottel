@@ -4,15 +4,15 @@ module.exports = async (req, res) => {
   try {
     const response = await axios.get(process.env.MOCK_API_URL);
     const appointments = response.data;
-    const today = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
-    
+    const today = new Date().toISOString().split('T')[0];
+
     const todayAppointments = appointments.filter(apt => apt.appointment_date === today);
-    
+
     if (todayAppointments.length === 0) {
       await sendTelegramMessage(`Nenhum agendamento para hoje (${today}).`);
       return res.status(200).json({ message: 'Nenhum agendamento hoje.' });
     }
-    
+
     let message = `📅 Agendamentos de hoje (${today}):\n\n`;
     todayAppointments.forEach(apt => {
       message += `👤 ${apt.name}\n`;
@@ -21,7 +21,7 @@ module.exports = async (req, res) => {
       message += `📱 WhatsApp: ${apt.whatsapp}\n`;
       message += `👁️ Modelo: ${apt.eyelash_model}\n\n`;
     });
-    
+
     await sendTelegramMessage(message);
     res.status(200).json({ sent: todayAppointments.length, date: today });
   } catch (error) {
