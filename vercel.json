@@ -20,10 +20,6 @@
     {
       "path": "/api/daily",
       "schedule": "0 8 * * *"
-    },
-    {
-      "path": "/api/reminder",
-      "schedule": "*/5 * * * *"
     }
   ]
 }
