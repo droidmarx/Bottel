@@ -27,7 +27,6 @@
         const FORM = document.getElementById('replyForm');
         let offset = 0;
 
-        // Polling de getUpdates a cada 10 segundos
         async function fetchUpdates() {
             try {
                 const response = await fetch(`https://api.telegram.org/bot${TOKEN}/getUpdates?offset=${offset}&limit=10`);
@@ -45,10 +44,9 @@
             } catch (error) {
                 console.error('Erro ao buscar atualizações:', error);
             }
-            setTimeout(fetchUpdates, 10000); // Polling novamente
+            setTimeout(fetchUpdates, 10000);
         }
 
-        // Enviar resposta
         FORM.addEventListener('submit', async (e) => {
             e.preventDefault();
             const chatId = document.getElementById('chatId').value;
@@ -70,7 +68,7 @@
             }
         });
 
-        fetchUpdates(); // Iniciar polling
+        fetchUpdates();
     </script>
 </body>
 </html>
